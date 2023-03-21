@@ -1,9 +1,0 @@
-__pycache__
-.venv
-*.egg-info
-*.so
-build/
-.mutmut-cache
-.pytest_cache
-.coverage
-htmlcov
