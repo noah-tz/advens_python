@@ -20,7 +20,7 @@ class Client:
 
     def insert_to_sql(self):
         if not MysqlDatabase.check_client_existence(self.email):
-            MysqlDatabase.add_client(self.name, self.family, self.city, self.street, self.house_number, self.number_pone,self.email)
+            MysqlDatabase.add_client(self.name, self.family, self.city, self.street, self.house_number, self.number_pone,self.email, self.password)
         
 
     def open_order(self):
@@ -33,7 +33,7 @@ class Client:
 
 
 
-noach = Client("0527194022", "noah", "tzitrenboim", "bet shemesh", "miryam", 12, "t0527184022@gmail.com", "2345")
-noach.open_order()
-MysqlDatabase.print_by_pd("orders")
-MysqlDatabase.print_by_pd("clients")
+# noach = Client("0527194022", "noah", "tzitrenboim", "bet shemesh", "miryam", 12, "t0527184022@gmail.com", "2345")
+# noach.open_order()
+# MysqlDatabase.print_by_pd("orders")
+# MysqlDatabase.print_by_pd("clients")

@@ -19,7 +19,6 @@ class SqlOrders:
         query = "INSERT INTO orders (order_id, client_email, order_amount, stage, order_notes) VALUES (%s, %s, %s, %s, %s)"
         values = (order_id, client_email, order_amount, stage, order_notes)
         cursor.execute(query, values)
-
         MysqlDatabase._mysql_connection.commit()
         MysqlDatabase.print_by_pd("orders")
 
@@ -55,7 +54,7 @@ class SqlOrders:
 
 class SqlClients:
     @staticmethod
-    def add_client(name: str, family_name: str, city: str, street: str, house_number: int, phone: str, client_email: str, message_type: str = "email") -> None:
+    def add_client(name: str, family_name: str, city: str, street: str, house_number: int, phone: str, client_email: str, client_password: str, message_type: str = "email") -> None:
         """
         Adds a client to the 'clients' table in the database.
 
@@ -70,8 +69,8 @@ class SqlClients:
             message_type (str, optional): The message type used to communicate with the client. Defaults to "email".
         """
         cursor = MysqlDatabase._mysql_connection.cursor()
-        query = "INSERT INTO clients (name, family_name, city, street, house_number, phone, client_email, message_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        values = (name, family_name, city, street, house_number, phone, client_email, message_type)
+        query = "INSERT INTO clients (name, family_name, city, street, house_number, phone, client_email, client_password, message_type) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        values = (name, family_name, city, street, house_number, phone, client_email, client_password, message_type)
         cursor.execute(query, values)
         MysqlDatabase._mysql_connection.commit()
         MysqlDatabase.print_by_pd("clients")
@@ -91,7 +90,25 @@ class SqlClients:
         cursor = MysqlDatabase._mysql_connection.cursor()
         query = "SELECT client_email FROM clients WHERE client_email = %s"
         cursor.execute(query, (email_client,))
-        return cursor.fetchone() is not None
+        return bool(cursor.fetchone())
+    
+    @staticmethod
+    def get_client_password(email_client: str) -> str:
+        """
+        Returns the password of a client with the given email address from the 'clients' table in the database.
+
+        Args:
+            email_client (str): The email address of the client to get the password for.
+
+        Returns:
+            str: The password of the client with the given email address, or an empty string if no such client exists.
+        """
+        cursor = MysqlDatabase._mysql_connection.cursor()
+        query = "SELECT client_password FROM clients WHERE client_email = %s"
+        cursor.execute(query, (email_client,))
+        result = cursor.fetchone()
+        return result[0] if result is not None else ""
+
 
 
 
@@ -349,6 +366,27 @@ class MysqlDatabase(SqlOrders, SqlClients, SqlVariables, SqlEquipment):
         MysqlDatabase.print_by_pd(table_name)
 
     @staticmethod
+    def get_value_from_table(table_name: str, column_name: str, row_id: int, column_id: str):
+        """
+        Fetches the value of a specific column in a specific row of a MySQL table.
+
+        Args:
+            table_name (str): The name of the table to query.
+            column_name (str): The name of the column to fetch the value from.
+            row_id (int): The unique identifier of the row to fetch the value from.
+            column_id (str): The name of the column that contains the row identifier.
+
+        Returns:
+            The value of the specified column in the specified row, or None if the row is not found.
+        """
+        cursor = MysqlDatabase._mysql_connection.cursor()
+        cursor.execute(f"SELECT {column_name} FROM {table_name} WHERE {column_id} = %s", (row_id,))
+        result = cursor.fetchone()
+        return result[0] if result else None
+
+        
+
+    @staticmethod
     def delete(table_name: str, line_condition: str, value: str) -> None:
         """
         Deletes rows from a MySQL table based on a condition.
@@ -405,17 +443,17 @@ class MysqlDatabase(SqlOrders, SqlClients, SqlVariables, SqlEquipment):
 
 
 
-MysqlDatabase.drop_database()
-MysqlDatabase.check_start_ID_orders()
-MysqlDatabase.add_client("noah", "tzitrenboim", "miryamssssss",
-                         "miryam", 4444, "0500000000", "t0527184022@gmail.com", "email")
-MysqlDatabase.add_order(MysqlDatabase.check_start_ID_orders(),
-                        "t0527184022@gmail.com", 128, "entered")
-MysqlDatabase.add_order(
-    MysqlDatabase.check_start_ID_orders(), "teyyycycyyd", 111)
-print(MysqlDatabase.column_names("clients"))
-print(MysqlDatabase.column_names("orders"))
-print(MysqlDatabase.column_names("variables"))
+# MysqlDatabase.drop_database()
+# MysqlDatabase.check_start_ID_orders()
+# MysqlDatabase.add_client("noah", "tzitrenboim", "miryamssssss",
+#                          "miryam", 4444, "0500000000", "t0527184022@gmail.com", "123456", "email")
+# MysqlDatabase.add_order(MysqlDatabase.check_start_ID_orders(),
+#                         "t0527184022@gmail.com", 128, "entered")
+# MysqlDatabase.add_order(
+#     MysqlDatabase.check_start_ID_orders(), "teyyycycyyd", 111)
+# print(MysqlDatabase.column_names("clients"))
+# print(MysqlDatabase.column_names("orders"))
+# print(MysqlDatabase.column_names("variables"))
 
 
 

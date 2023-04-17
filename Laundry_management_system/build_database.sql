@@ -20,6 +20,7 @@ CREATE TABLE clients (
     house_number real,
     phone VARCHAR(30), 
     client_email VARCHAR(30),
+    client_password VARCHAR(30),
     message_type ENUM('email','sms','None')
 );
 
